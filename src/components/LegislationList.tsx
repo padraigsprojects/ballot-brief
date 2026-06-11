@@ -19,16 +19,20 @@ export function LegislationList({
 
   return (
     <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
-      {items.map((item) => (
-        <li key={`${item.congress}-${item.type}-${item.number}`}>
-          <Link
-            href={billPath(item.congress, item.type, item.number)}
-            className="block px-4 py-4 transition hover:bg-slate-50"
-          >
+      {items.map((item, index) => {
+        const href = billPath(item.congress, item.type, item.number);
+        const content = (
+          <>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">
-                {item.type} {item.number}
-              </span>
+              {item.type && item.number ? (
+                <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">
+                  {item.type} {item.number}
+                </span>
+              ) : (
+                <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">
+                  Legislation
+                </span>
+              )}
               {item.policyArea?.name && (
                 <span className="text-xs text-slate-500">
                   {item.policyArea.name}
@@ -46,9 +50,21 @@ export function LegislationList({
                 {item.latestAction.text}
               </p>
             )}
-          </Link>
-        </li>
-      ))}
+          </>
+        );
+
+        return (
+          <li key={`${item.congress}-${item.type}-${item.number}-${index}`}>
+            {href ? (
+              <Link href={href} className="block px-4 py-4 transition hover:bg-slate-50">
+                {content}
+              </Link>
+            ) : (
+              <div className="px-4 py-4">{content}</div>
+            )}
+          </li>
+        );
+      })}
     </ul>
   );
 }

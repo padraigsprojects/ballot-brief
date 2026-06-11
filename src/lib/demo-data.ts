@@ -79,6 +79,59 @@ export const DEMO_MEMBERS: MemberSummary[] = [
       ],
     },
   },
+  {
+    bioguideId: "W000805",
+    name: "Warner, Mark R.",
+    state: "Virginia",
+    partyName: "Democratic",
+    terms: {
+      item: [
+        {
+          chamber: "Senate",
+          congress: 119,
+          stateCode: "VA",
+          stateName: "Virginia",
+          partyName: "Democratic",
+        },
+      ],
+    },
+  },
+  {
+    bioguideId: "K000384",
+    name: "Kaine, Tim",
+    state: "Virginia",
+    partyName: "Democratic",
+    terms: {
+      item: [
+        {
+          chamber: "Senate",
+          congress: 119,
+          stateCode: "VA",
+          stateName: "Virginia",
+          partyName: "Democratic",
+        },
+      ],
+    },
+  },
+  {
+    bioguideId: "B001307",
+    name: "Beyer, Donald S., Jr.",
+    state: "Virginia",
+    partyName: "Democratic",
+    district: 8,
+    terms: {
+      item: [
+        {
+          chamber: "House of Representatives",
+          congress: 119,
+          stateCode: "VA",
+          stateName: "Virginia",
+          partyName: "Democratic",
+          district: 8,
+        },
+      ],
+    },
+  },
 ];
 
 export const DEMO_MEMBER_DETAILS: Record<string, MemberDetail> = {
@@ -136,6 +189,42 @@ export const DEMO_MEMBER_DETAILS: Record<string, MemberDetail> = {
     officialWebsiteUrl: "https://www.tillis.senate.gov",
     sponsoredLegislation: { count: 67, url: "" },
     cosponsoredLegislation: { count: 980, url: "" },
+    leadership: { item: [] },
+  },
+  W000805: {
+    ...DEMO_MEMBERS[4],
+    currentMember: true,
+    directOrderName: "Mark R. Warner",
+    invertedOrderName: "Warner, Mark R.",
+    honorificName: "Mr.",
+    birthYear: 1954,
+    officialWebsiteUrl: "https://www.warner.senate.gov",
+    sponsoredLegislation: { count: 145, url: "" },
+    cosponsoredLegislation: { count: 1520, url: "" },
+    leadership: { item: [] },
+  },
+  K000384: {
+    ...DEMO_MEMBERS[5],
+    currentMember: true,
+    directOrderName: "Tim Kaine",
+    invertedOrderName: "Kaine, Tim",
+    honorificName: "Mr.",
+    birthYear: 1958,
+    officialWebsiteUrl: "https://www.kaine.senate.gov",
+    sponsoredLegislation: { count: 122, url: "" },
+    cosponsoredLegislation: { count: 1340, url: "" },
+    leadership: { item: [] },
+  },
+  B001307: {
+    ...DEMO_MEMBERS[6],
+    currentMember: true,
+    directOrderName: "Donald S. Beyer Jr.",
+    invertedOrderName: "Beyer, Donald S., Jr.",
+    honorificName: "Mr.",
+    birthYear: 1950,
+    officialWebsiteUrl: "https://beyer.house.gov",
+    sponsoredLegislation: { count: 77, url: "" },
+    cosponsoredLegislation: { count: 1660, url: "" },
     leadership: { item: [] },
   },
 };
@@ -266,5 +355,8 @@ export const DEMO_BILL: BillDetail = {
 };
 
 export function isDemoMode(): boolean {
-  return !process.env.CONGRESS_API_KEY;
+  return (
+    process.env.NEXT_PUBLIC_FORCE_DEMO_MODE === "true" ||
+    !process.env.CONGRESS_API_KEY
+  );
 }

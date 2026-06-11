@@ -6,7 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "build:e2e": "cross-env NEXT_PUBLIC_FORCE_DEMO_MODE=true CONGRESS_API_KEY= next build",
+    "test:e2e": "npm run build:e2e && playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:congress": "node tests/integration/congress-api-live.mjs",
+    "predeploy": "npm run lint && npm run build && npm run test:e2e",
+    "predeploy:live": "npm run predeploy && npm run test:congress"
   },
   "dependencies": {
     "next": "16.2.9",
@@ -14,10 +20,12 @@
     "react-dom": "19.2.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4",

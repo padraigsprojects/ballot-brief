@@ -84,35 +84,76 @@ interface HouseVotesListResponse {
 
 interface HouseVoteMembersResponse {
   houseRollCallVoteMembers?: Array<{
-    bioguideId: string;
-    votePosition: string;
+    bioguideId?: string;
+    bioguideID?: string;
+    votePosition?: string;
+    voteCast?: string;
     firstName?: string;
     lastName?: string;
     party?: string;
     state?: string;
   }>;
+  houseRollCallVoteMemberVotes?: {
+    results?: Array<{
+      bioguideId?: string;
+      bioguideID?: string;
+      votePosition?: string;
+      voteCast?: string;
+      firstName?: string;
+      lastName?: string;
+      party?: string;
+      state?: string;
+    }>;
+  };
 }
 
 interface BillDetailResponse {
   bill?: BillDetail;
 }
 
+async function fetchAllMemberPages(
+  path: string,
+  params: Record<string, string | number | boolean | undefined>,
+): Promise<MemberSummary[]> {
+  const limit = 250;
+  const members: MemberSummary[] = [];
+  const seen = new Set<string>();
+
+  for (let offset = 0; ; offset += limit) {
+    const data = await congressFetch<MembersListResponse>(path, {
+      ...params,
+      limit,
+      offset: offset || undefined,
+    });
+    const page = data.members ?? [];
+
+    for (const member of page) {
+      if (!seen.has(member.bioguideId)) {
+        seen.add(member.bioguideId);
+        members.push(member);
+      }
+    }
+
+    const totalCount = data.pagination?.count;
+    if (!data.pagination?.next || page.length === 0) break;
+    if (totalCount !== undefined && members.length >= totalCount) break;
+  }
+
+  return members;
+}
+
 export async function fetchCurrentMembers(): Promise<MemberSummary[]> {
-  const data = await congressFetch<MembersListResponse>("/member", {
+  return fetchAllMemberPages("/member", {
     currentMember: true,
-    limit: 250,
   });
-  return data.members ?? [];
 }
 
 export async function fetchMembersByCongress(
   congress: number = CURRENT_CONGRESS,
 ): Promise<MemberSummary[]> {
-  const data = await congressFetch<MembersListResponse>(
-    `/member/congress/${congress}`,
-    { currentMember: true, limit: 250 },
-  );
-  return data.members ?? [];
+  return fetchAllMemberPages(`/member/congress/${congress}`, {
+    currentMember: true,
+  });
 }
 
 export async function fetchMember(
@@ -178,10 +219,14 @@ async function fetchMemberPositionOnVote(
   const data = await congressFetch<HouseVoteMembersResponse>(
     `/house-vote/${congress}/${session}/${rollCallNumber}/members`,
   );
-  const match = data.houseRollCallVoteMembers?.find(
-    (m) => m.bioguideId === bioguideId,
+  const memberVotes =
+    data.houseRollCallVoteMembers ??
+    data.houseRollCallVoteMemberVotes?.results ??
+    [];
+  const match = memberVotes.find(
+    (m) => (m.bioguideId ?? m.bioguideID) === bioguideId,
   );
-  return match?.votePosition ?? null;
+  return match?.votePosition ?? match?.voteCast ?? null;
 }
 
 async function buildMemberVoteHistory(
@@ -240,7 +285,9 @@ export function getCachedMemberVoteHistory(
 }
 
 export function getCurrentChamber(member: MemberDetail): "House" | "Senate" | null {
-  const terms = member.terms?.item;
+  const terms = Array.isArray(member.terms)
+    ? member.terms
+    : member.terms?.item;
   if (!terms?.length) return null;
 
   const current = [...terms]

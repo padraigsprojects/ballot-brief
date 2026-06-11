@@ -74,13 +74,20 @@ export function getStateCode(stateName: string): string | undefined {
 export function getMemberChamber(
   member: MemberSummary | MemberDetail,
 ): "House" | "Senate" | "Unknown" {
-  const terms = member.terms?.item;
+  const terms = getMemberTerms(member);
   if (!terms?.length) return "Unknown";
 
   const latest = terms[terms.length - 1];
   if (latest.chamber?.includes("Senate")) return "Senate";
   if (latest.chamber?.includes("House")) return "House";
   return "Unknown";
+}
+
+export function getMemberTerms(
+  member: MemberSummary | MemberDetail,
+) {
+  if (Array.isArray(member.terms)) return member.terms;
+  return member.terms?.item ?? [];
 }
 
 export function formatMemberName(member: MemberSummary | MemberDetail): string {
@@ -100,6 +107,18 @@ export function formatDistrict(member: MemberSummary | MemberDetail): string {
   if (member.district === 0) return `${member.state} (At-large)`;
   if (member.district) return `${member.state} District ${member.district}`;
   return member.state;
+}
+
+export function getPartyName(member: MemberSummary | MemberDetail): string {
+  const latestTerm = getMemberTerms(member).at(-1);
+  const latestPartyHistory = member.partyHistory?.at(-1);
+
+  return (
+    member.partyName ??
+    latestPartyHistory?.partyName ??
+    latestTerm?.partyName ??
+    "Party unavailable"
+  );
 }
 
 export function filterMembers(
@@ -124,7 +143,11 @@ export function filterMembers(
     }
 
     if (filters.party && filters.party !== "all") {
-      if (!member.partyName.toLowerCase().includes(filters.party.toLowerCase())) {
+      if (
+        !getPartyName(member)
+          .toLowerCase()
+          .includes(filters.party.toLowerCase())
+      ) {
         return false;
       }
     }
@@ -177,10 +200,11 @@ export function getStateOptions(): { code: string; name: string }[] {
 }
 
 export function billPath(
-  congress: number,
-  type: string,
-  number: number,
-): string {
+  congress?: number | null,
+  type?: string | null,
+  number?: number | null,
+): string | null {
+  if (!congress || !type || !number || Number.isNaN(number)) return null;
   return `/bills/${congress}/${type.toLowerCase()}/${number}`;
 }
 
@@ -197,7 +221,11 @@ export function votePositionColor(position: string): string {
   }
 }
 
-export function partyColor(party: string): string {
+export function partyColor(party?: string): string {
+  if (!party) {
+    return "bg-slate-100 text-slate-700 border-slate-200";
+  }
+
   const lower = party.toLowerCase();
   if (lower.includes("democrat")) {
     return "bg-blue-100 text-blue-900 border-blue-200";

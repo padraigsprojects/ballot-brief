@@ -45,6 +45,43 @@ Key routes:
 - `/compare` — side-by-side candidate comparison
 - `/local-races` — state/local race support plan
 
+## Validation before deployment
+
+Run the full pre-deploy gate:
+
+```bash
+npm run predeploy
+```
+
+This runs:
+
+- `npm run lint` for static checks
+- `npm run build` for production compilation and route generation
+- `npm run test:e2e` for browser coverage of the main voter flows
+
+The end-to-end suite runs in demo mode so it does not need a Congress.gov API
+key and does not depend on live network data. Covered flows include
+unauthenticated browsing, member detail pages, bill detail pages, voter profile
+save, personalized dashboard, candidate comparison, and local-race planning.
+
+To also validate the live Congress.gov integration, add a real API key to
+`.env.local` and run:
+
+```bash
+npm run predeploy:live
+```
+
+This runs the deterministic browser suite plus live API checks for member
+pagination, Virginia senators and House members, member detail shape,
+sponsored-legislation parsing, and House vote member positions. Use
+`npm run test:congress` when you only want the live API signal.
+
+For interactive debugging:
+
+```bash
+npm run test:e2e:ui
+```
+
 ## Tech stack
 
 - [Next.js](https://nextjs.org/) 16 (App Router)

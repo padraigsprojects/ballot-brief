@@ -6,6 +6,7 @@ import {
   formatDistrict,
   formatMemberName,
   getMemberChamber,
+  getPartyName,
 } from "@/lib/member-utils";
 import { readStoredProfile } from "@/lib/profile-storage";
 import type { MemberSummary, VoterProfile } from "@/lib/types";
@@ -137,7 +138,7 @@ function ComparisonCard({ member }: { member?: MemberSummary }) {
           </h2>
           <p className="mt-1 text-slate-600">{formatDistrict(member)}</p>
         </div>
-        <PartyBadge party={member.partyName} />
+        <PartyBadge party={getPartyName(member)} />
       </div>
 
       <dl className="mt-6 space-y-4 text-sm">

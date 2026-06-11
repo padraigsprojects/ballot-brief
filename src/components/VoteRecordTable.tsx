@@ -36,14 +36,14 @@ export function VoteRecordTable({ votes }: { votes: MemberVoteRecord[] }) {
         <tbody className="divide-y divide-slate-100 bg-white">
           {votes.map((record) => {
             const { vote, position } = record;
-            const billLink =
-              vote.legislationType && vote.legislationNumber
-                ? billPath(
-                    vote.congress,
-                    vote.legislationType,
-                    parseInt(vote.legislationNumber.replace(/\D/g, ""), 10),
-                  )
-                : null;
+            const billNumber = vote.legislationNumber
+              ? parseInt(vote.legislationNumber.replace(/\D/g, ""), 10)
+              : null;
+            const billLink = billPath(
+              vote.congress,
+              vote.legislationType,
+              billNumber,
+            );
 
             return (
               <tr key={`${vote.congress}-${vote.sessionNumber}-${vote.rollCallNumber}`}>

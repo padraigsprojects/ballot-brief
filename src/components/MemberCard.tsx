@@ -4,6 +4,7 @@ import {
   formatDistrict,
   formatMemberName,
   getMemberChamber,
+  getPartyName,
 } from "@/lib/member-utils";
 import { PartyBadge } from "./PartyBadge";
 
@@ -22,7 +23,7 @@ export function MemberCard({ member }: { member: MemberSummary }) {
           </h3>
           <p className="mt-1 text-sm text-slate-500">{formatDistrict(member)}</p>
         </div>
-        <PartyBadge party={member.partyName} />
+        <PartyBadge party={getPartyName(member)} />
       </div>
       <p className="mt-4 text-xs font-medium uppercase tracking-wide text-slate-400">
         {chamber === "Unknown" ? "Congress" : chamber}

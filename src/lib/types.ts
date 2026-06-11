@@ -35,7 +35,8 @@ export interface MemberSummary {
   partyName: string;
   district?: number;
   depiction?: { imageUrl?: string };
-  terms?: { item: MemberTerm[] };
+  terms?: { item: MemberTerm[] } | MemberTerm[];
+  partyHistory?: PartyHistoryItem[];
   url?: string;
 }
 
@@ -50,13 +51,19 @@ export interface MemberDetail extends MemberSummary {
   leadership?: { item: LeadershipRole[] };
   sponsoredLegislation?: { count: number; url: string };
   cosponsoredLegislation?: { count: number; url: string };
-  terms?: { item: MemberTerm[] };
+  terms?: { item: MemberTerm[] } | MemberTerm[];
   currentMember?: boolean;
   firstName?: string;
   lastName?: string;
   directOrderName?: string;
   invertedOrderName?: string;
   honorificName?: string;
+}
+
+export interface PartyHistoryItem {
+  partyAbbreviation?: string;
+  partyName?: string;
+  startYear?: number;
 }
 
 export interface LeadershipRole {
@@ -66,9 +73,9 @@ export interface LeadershipRole {
 }
 
 export interface LegislationItem {
-  congress: number;
-  type: string;
-  number: number;
+  congress?: number | null;
+  type?: string | null;
+  number?: number | null;
   title: string;
   introducedDate?: string;
   latestAction?: {

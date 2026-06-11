@@ -19,7 +19,12 @@ import {
   DEMO_VOTES,
   isDemoMode,
 } from "@/lib/demo-data";
-import { formatDistrict, formatMemberName, getMemberChamber } from "@/lib/member-utils";
+import {
+  formatDistrict,
+  formatMemberName,
+  getMemberChamber,
+  getPartyName,
+} from "@/lib/member-utils";
 
 export async function generateMetadata({
   params,
@@ -35,7 +40,7 @@ export async function generateMetadata({
 
   return {
     title: formatMemberName(member),
-    description: `Voting record and legislation for ${formatMemberName(member)} (${member.partyName}, ${member.state}).`,
+    description: `Voting record and legislation for ${formatMemberName(member)} (${getPartyName(member)}, ${member.state}).`,
   };
 }
 
@@ -107,7 +112,7 @@ export default async function MemberDetailPage({
               <h1 className="text-3xl font-bold text-slate-900">
                 {formatMemberName(member)}
               </h1>
-              <PartyBadge party={member.partyName} />
+              <PartyBadge party={getPartyName(member)} />
             </div>
             <p className="mt-2 text-lg text-slate-600">{formatDistrict(member)}</p>
             <p className="mt-1 text-sm text-slate-500">
